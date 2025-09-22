@@ -41,7 +41,7 @@ from zk_utils.application.tags.get_tags import (
 )
 from zk_utils.presentation.injector import injector
 
-mcp = FastMCP("Zk")
+mcp = FastMCP("zk-mcp")
 
 
 @mcp.tool()
