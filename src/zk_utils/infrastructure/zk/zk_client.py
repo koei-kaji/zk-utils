@@ -1,12 +1,25 @@
 import subprocess
+from functools import wraps
 from pathlib import Path
-from typing import Final
+from typing import Callable, Final, TypeVar
 
 from injector import inject, singleton
 
 from ..._base_models import BaseFrozenModel
 from .dao.note import Note
 from .dao.tag import Tag
+
+F = TypeVar("F", bound=Callable[..., object])
+
+
+def with_index(func: F) -> F:
+    @wraps(func)
+    def wrapper(self: "ZkClient", *args: object, **kwargs: object) -> object:
+        self._execute_index()
+        return func(self, *args, **kwargs)
+
+    return wrapper  # type: ignore[return-value]
+
 
 FORMAT_NOTE: Final[str] = '{{path}}|{{title}}|{{join tags ","}}'
 FORMAT_CONTENT: Final[str] = "{{raw-content}}"
@@ -22,6 +35,21 @@ class ZkClient(BaseFrozenModel):
         super().__init__()
         self._cwd = cwd
 
+    def _execute_index(self) -> None:
+        command = ["zk", "index", "--quiet"]
+
+        try:
+            subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                cwd=self._cwd,
+                check=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Error: {e.stderr}") from e
+
+    @with_index
     def _execute_zk_list_single(
         self,
         fmt: str = "",
@@ -52,6 +80,7 @@ class ZkClient(BaseFrozenModel):
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
 
+    @with_index
     def _execute_zk_list_multilines(
         self,
         fmt: str = "",
@@ -81,6 +110,7 @@ class ZkClient(BaseFrozenModel):
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
 
+    @with_index
     def _execute_zk_tag_list_multilines(
         self,
         fmt: str = "",
@@ -155,7 +185,7 @@ class ZkClient(BaseFrozenModel):
         return notes
 
     def get_note(self, path: Path) -> Note | None:
-        result = self._execute_zk_list_single(FORMAT_NOTE)
+        result = self._execute_zk_list_single(FORMAT_NOTE, [str(path)])
         note = self._parse_note(result)
 
         if note is None:
@@ -167,7 +197,7 @@ class ZkClient(BaseFrozenModel):
         return note
 
     def get_content(self, path: Path) -> str:
-        return self._execute_zk_list_single(FORMAT_CONTENT)
+        return self._execute_zk_list_single(FORMAT_CONTENT, [str(path)])
 
     def get_tags(self) -> list[Tag]:
         results = self._execute_zk_tag_list_multilines(FORMAT_TAG)
@@ -181,6 +211,7 @@ class ZkClient(BaseFrozenModel):
 
         return tags
 
+    @with_index
     def create_note(self, title: str, path: Path) -> Note:
         command = ["zk", "new", "--print-path", "--title", title, str(path)]
 

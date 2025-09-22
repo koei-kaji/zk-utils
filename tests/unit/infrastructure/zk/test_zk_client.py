@@ -199,8 +199,11 @@ class TestZkClientGetNotes:
         # When: ノート一覧を取得する
         notes = client.get_notes()
 
-        # Then: 適切なコマンドが実行され、Noteオブジェクトのリストが返されること
-        mock_run.assert_called_once_with(
+        # Then: @with_indexデコレータにより_execute_index()とget_notesで計2回の呼び出し
+        assert mock_run.call_count == 2
+
+        # 最後の呼び出し（get_notes）が適切なコマンドで実行されること
+        mock_run.assert_called_with(
             [
                 "zk",
                 "list",
@@ -237,8 +240,11 @@ class TestZkClientGetNotes:
         # When: 条件付きでノート一覧を取得する
         notes = client.get_notes(conditions)
 
-        # Then: 条件がコマンドに追加されること
-        mock_run.assert_called_once_with(
+        # Then: @with_indexデコレータにより2回の呼び出し
+        assert mock_run.call_count == 2
+
+        # 最後の呼び出しで条件がコマンドに追加されること
+        mock_run.assert_called_with(
             [
                 "zk",
                 "list",
@@ -309,8 +315,11 @@ class TestZkClientGetTags:
         # When: タグ一覧を取得する
         tags = client.get_tags()
 
-        # Then: 適切なコマンドが実行され、Tagオブジェクトのリストが返されること
-        mock_run.assert_called_once_with(
+        # Then: @with_indexデコレータにより2回の呼び出し
+        assert mock_run.call_count == 2
+
+        # 最後の呼び出しで適切なコマンドが実行されること
+        mock_run.assert_called_with(
             [
                 "zk",
                 "tag",
@@ -364,8 +373,11 @@ class TestZkClientGetContent:
         # When: コンテンツを取得する
         content = client.get_content(Path("/test.md"))
 
-        # Then: 適切なコマンドが実行され、コンテンツが返されること
-        mock_run.assert_called_once_with(
+        # Then: @with_indexデコレータにより2回の呼び出し
+        assert mock_run.call_count == 2
+
+        # 最後の呼び出しで適切なコマンドが実行されること
+        mock_run.assert_called_with(
             [
                 "zk",
                 "list",
@@ -375,6 +387,7 @@ class TestZkClientGetContent:
                 "title",
                 "--format",
                 "{{raw-content}}",
+                "/test.md",
             ],
             capture_output=True,
             text=True,
@@ -401,8 +414,11 @@ class TestZkClientCreateNote:
         # When: ノートを作成する
         note = client.create_note("New Note", Path("notes/"))
 
-        # Then: 適切なコマンドが実行され、Noteオブジェクトが返されること
-        mock_run.assert_called_once_with(
+        # Then: @with_indexデコレータにより2回の呼び出し
+        assert mock_run.call_count == 2
+
+        # 最後の呼び出しで適切なコマンドが実行されること
+        mock_run.assert_called_with(
             ["zk", "new", "--print-path", "--title", "New Note", "notes"],
             capture_output=True,
             text=True,
@@ -446,7 +462,14 @@ class TestZkClientGetNote:
         content_result = Mock()
         content_result.stdout = "# Test Note\n\nTest content here."
 
-        mock_run.side_effect = [note_result, content_result]
+        # @with_indexデコレータにより4回の呼び出しが発生
+        # 1. _execute_index (get_note用)
+        # 2. _execute_zk_list_single (note情報取得)
+        # 3. _execute_index (get_content用)
+        # 4. _execute_zk_list_single (content取得)
+        index_result = Mock()
+        index_result.stdout = ""
+        mock_run.side_effect = [index_result, note_result, index_result, content_result]
 
         # When: 単一ノートを取得する
         note = client.get_note(Path("/test.md"))
@@ -457,7 +480,7 @@ class TestZkClientGetNote:
         assert note.path == Path("/test.md")
         assert note.tags == ["python", "testing"]
         assert note.content == "# Test Note\n\nTest content here."
-        assert mock_run.call_count == 2
+        assert mock_run.call_count == 4
 
     def test_get_note_parse_failure_should_return_none(
         self, client: ZkClient, mocker: MockerFixture

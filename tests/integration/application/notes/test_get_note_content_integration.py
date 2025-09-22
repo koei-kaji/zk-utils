@@ -23,14 +23,18 @@ class TestGetNoteContentIntegration:
         sample_zk_note_content_output: str,
         sample_note_path: Path,
     ) -> None:
-        # Given: 正常なzk出力をモック
+        # Given: 正常なzk出力をモック（@with_indexデコレータ対応）
         mock_subprocess_run.side_effect = [
+            # _execute_index呼び出し用のモック（get_note前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             # get_note呼び出し用のモック（ノート情報取得）
             type(
                 "MockResult",
                 (),
                 {"stdout": sample_zk_single_note_output, "returncode": 0, "stderr": ""},
             )(),
+            # _execute_index呼び出し用のモック（get_content前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             # get_content呼び出し用のモック（コンテンツ取得）
             type(
                 "MockResult",
@@ -51,7 +55,7 @@ class TestGetNoteContentIntegration:
 
         # Then: 期待するコンテンツが返されること
         assert result.content == sample_zk_note_content_output
-        assert mock_subprocess_run.call_count == 2
+        assert mock_subprocess_run.call_count == 4
 
     def test_get_note_content_with_empty_content_should_return_empty_string(
         self,
@@ -62,12 +66,16 @@ class TestGetNoteContentIntegration:
     ) -> None:
         # Given: 空のコンテンツを返すzkコマンド
         mock_subprocess_run.side_effect = [
+            # _execute_index呼び出し用のモック（get_note前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             # get_note呼び出し用のモック
             type(
                 "MockResult",
                 (),
                 {"stdout": sample_zk_single_note_output, "returncode": 0, "stderr": ""},
             )(),
+            # _execute_index呼び出し用のモック（get_content前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             # get_content呼び出し用のモック（空のコンテンツ）
             type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
         ]
@@ -91,11 +99,15 @@ class TestGetNoteContentIntegration:
         # Given: Unicode文字を含むコンテンツ
         unicode_content = "# ユニコードテスト\n\n日本語コンテンツ 🎯\n\nαβγδεζ\n"
         mock_subprocess_run.side_effect = [
+            # _execute_index呼び出し用のモック（get_note前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
                 "MockResult",
                 (),
                 {"stdout": sample_zk_single_note_output, "returncode": 0, "stderr": ""},
             )(),
+            # _execute_index呼び出し用のモック（get_content前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
                 "MockResult",
                 (),
@@ -125,11 +137,15 @@ class TestGetNoteContentIntegration:
         # Given: 大きなコンテンツファイル
         large_content = "# 大きなファイル\n\n" + "テスト行\n" * 1000
         mock_subprocess_run.side_effect = [
+            # _execute_index呼び出し用のモック（get_note前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
                 "MockResult",
                 (),
                 {"stdout": sample_zk_single_note_output, "returncode": 0, "stderr": ""},
             )(),
+            # _execute_index呼び出し用のモック（get_content前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
                 "MockResult",
                 (),
@@ -195,11 +211,15 @@ def hello():
 | A   | B   |
 """
         mock_subprocess_run.side_effect = [
+            # _execute_index呼び出し用のモック（get_note前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
                 "MockResult",
                 (),
                 {"stdout": sample_zk_single_note_output, "returncode": 0, "stderr": ""},
             )(),
+            # _execute_index呼び出し用のモック（get_content前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
                 "MockResult",
                 (),
@@ -234,12 +254,16 @@ class TestGetNoteContentErrorHandling:
     ) -> None:
         # Given: ノート情報取得は成功するが、コンテンツ取得でエラー
         mock_subprocess_run.side_effect = [
+            # _execute_index呼び出し用のモック（get_note前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             # 最初の呼び出し（ノート情報取得）は成功
             type(
                 "MockResult",
                 (),
                 {"stdout": sample_zk_single_note_output, "returncode": 0, "stderr": ""},
             )(),
+            # _execute_index呼び出し用のモック（get_content前）
+            type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             # 2回目の呼び出し（コンテンツ取得）でエラー
             subprocess.CalledProcessError(
                 returncode=1, cmd=["zk", "list"], stderr="Error: content not found"
