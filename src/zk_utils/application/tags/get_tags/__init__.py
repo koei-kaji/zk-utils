@@ -13,7 +13,7 @@ class GetTagsOutput(ABCOutput):
 
 
 @singleton
-class GetTagsService(ABCService):
+class GetTagsService(ABCService[GetTagsInput, GetTagsOutput]):
     _query_service: IFTagQueryService
 
     @inject

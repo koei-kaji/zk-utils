@@ -20,7 +20,7 @@ class GetLinkToNotesOutput(ABCOutput):
 
 
 @singleton
-class GetLinkToNotesService(ABCService):
+class GetLinkToNotesService(ABCService[GetLinkToNotesInput, GetLinkToNotesOutput]):
     _query_service: IFNoteQueryService
 
     @inject

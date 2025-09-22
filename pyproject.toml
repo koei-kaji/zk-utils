@@ -27,7 +27,6 @@ dev = [
     "ruff>=0.11.5",
 ]
 
-
 [build-system]
 requires = ["uv_build>=0.8.15,<0.9.0"]
 build-backend = "uv_build"

@@ -17,7 +17,7 @@ class CreateNoteOutput(ABCOutput):
 
 
 @singleton
-class CreateNoteService(ABCService):
+class CreateNoteService(ABCService[CreateNoteInput, CreateNoteOutput]):
     _repository: IFNoteRepository
 
     @inject

@@ -15,7 +15,7 @@ class GetNoteContentOutput(ABCOutput):
 
 
 @singleton
-class GetNoteContentService(ABCService):
+class GetNoteContentService(ABCService[GetNoteContentInput, GetNoteContentOutput]):
     _repository: IFNoteRepository
 
     @inject
@@ -26,4 +26,4 @@ class GetNoteContentService(ABCService):
     def handle(self, input_data: GetNoteContentInput) -> GetNoteContentOutput:
         note = self._repository.find_note_content(input_data.path)
 
-        return GetNoteContentOutput(content=note.content)
+        return GetNoteContentOutput(content=note.content or "")

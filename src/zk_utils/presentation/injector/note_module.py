@@ -7,5 +7,5 @@ from ...infrastructure.zk.notes import ZkNoteQueryService, ZkNoteRepository
 
 class NoteModule(Module):
     def configure(self, binder: Binder) -> None:
-        binder.bind(IFNoteQueryService, ZkNoteQueryService)
-        binder.bind(IFNoteRepository, ZkNoteRepository)
+        binder.bind(IFNoteQueryService, ZkNoteQueryService)  # type: ignore[type-abstract]
+        binder.bind(IFNoteRepository, ZkNoteRepository)  # type: ignore[type-abstract]

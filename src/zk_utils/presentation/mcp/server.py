@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
@@ -44,7 +44,7 @@ def get_notes(
     tags_match_mode: Annotated[
         Literal["AND", "OR"], Field(description="match_mode")
     ] = "AND",
-) -> dict:
+) -> dict[str, Any]:
     service = injector.get(GetNotesService)
 
     input = GetNotesInput(
@@ -63,7 +63,9 @@ def get_notes(
 
 
 @mcp.tool()
-def get_note_content(path: Annotated[Path, Field(description="path")]) -> dict:
+def get_note_content(
+    path: Annotated[Path, Field(description="path")],
+) -> dict[str, Any]:
     service = injector.get(GetNoteContentService)
     input = GetNoteContentInput(path=path)
     output = service.handle(input)
@@ -76,7 +78,7 @@ def get_link_to_notes(
     path: Annotated[Path, Field(description="path")],
     page: Annotated[int, Field(description="page")] = 1,
     per_page: Annotated[int, Field(description="per_page")] = 10,
-) -> dict:
+) -> dict[str, Any]:
     service = injector.get(GetLinkToNotesService)
     input = GetLinkToNotesInput(page=page, per_page=per_page, path=path)
     output = service.handle(input)
@@ -89,7 +91,7 @@ def get_linked_by_notes(
     path: Annotated[Path, Field(description="path")],
     page: Annotated[int, Field(description="page")] = 1,
     per_page: Annotated[int, Field(description="per_page")] = 10,
-) -> dict:
+) -> dict[str, Any]:
     service = injector.get(GetLinkedByNotesService)
 
     input_data = GetLinkedByNotesInput(page=page, per_page=per_page, path=path)
@@ -103,7 +105,7 @@ def get_related_notes(
     path: Annotated[Path, Field(description="path")],
     page: Annotated[int, Field(description="page")] = 1,
     per_page: Annotated[int, Field(description="per_page")] = 10,
-) -> dict:
+) -> dict[str, Any]:
     service = injector.get(GetRelatedNotesService)
     input_data = GetRelatedNotesInput(page=page, per_page=per_page, path=path)
     output = service.handle(input_data)
@@ -112,7 +114,7 @@ def get_related_notes(
 
 
 @mcp.tool()
-def get_tags() -> dict:
+def get_tags() -> dict[str, Any]:
     service = injector.get(GetTagsService)
 
     input_data = GetTagsInput()
@@ -125,7 +127,7 @@ def get_tags() -> dict:
 def create_note(
     title: Annotated[str, Field(description="title")],
     path: Annotated[Path, Field(description="path")],
-) -> dict:
+) -> dict[str, Any]:
     service = injector.get(CreateNoteService)
 
     input_data = CreateNoteInput(title=title, path=path)

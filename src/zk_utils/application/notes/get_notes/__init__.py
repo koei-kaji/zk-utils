@@ -25,7 +25,7 @@ class GetNotesOutput(ABCOutput):
 
 
 @singleton
-class GetNotesService(ABCService):
+class GetNotesService(ABCService[GetNotesInput, GetNotesOutput]):
     _query_service: IFNoteQueryService
 
     @inject

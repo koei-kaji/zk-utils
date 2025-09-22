@@ -20,7 +20,7 @@ class GetRelatedNotesOutput(ABCOutput):
 
 
 @singleton
-class GetRelatedNotesService(ABCService):
+class GetRelatedNotesService(ABCService[GetRelatedNotesInput, GetRelatedNotesOutput]):
     _query_service: IFNoteQueryService
 
     @inject

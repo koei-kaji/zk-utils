@@ -80,7 +80,7 @@ class ZkNoteQueryService(IFNoteQueryService):
         # tag
         tag_conditions: list[str] = []
         if len(input_data.tags) > 0:
-            tag_delimiter = ", " if input_data.tags_match_mode == " AND " else "OR"
+            tag_delimiter = ", " if input_data.tags_match_mode == "AND" else "OR"
             tag_conditions = ["--tag", f"{tag_delimiter}".join(input_data.tags)]
 
         results = self._client.get_notes(

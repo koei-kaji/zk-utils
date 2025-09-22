@@ -19,6 +19,9 @@ class ZkNoteRepository(IFNoteRepository):
     def find_note_content(self, path: Path) -> Note:
         result = self._client.get_note(path)
 
+        if result is None:
+            raise ValueError(f"Note not found at path: {path}")
+
         return Note(
             title=result.title,
             path=result.path,
