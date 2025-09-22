@@ -1,0 +1,27 @@
+[lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`) codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = [
+  # Default
+  "E4",
+  "E7",
+  "E9",
+  "F",
+  # Additional
+  "ANN", # type annotations
+  "E", # pycodestyle errors
+  "I", # isort
+  "RUF", # ruff specific rules
+  "W", # pycodestyle warngings
+]
+
+ignore = []
+
+unfixable = [
+  "F401", # unused imports
+  "F841", # unused variables
+]
+
+[lint.pydocstyle]
+convention = "google"

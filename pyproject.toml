@@ -1,0 +1,33 @@
+[project]
+name = "zk-utils"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "koei-kaji", email = "koei.kaji@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "mcp[cli]>=1.6.0",
+    "pydantic-settings>=2.0.0",
+    "injector>=0.22.0",
+]
+
+[project.scripts]
+zk-utils-mcp = "zk_utils.presentation.mcp.server:main"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pre-commit>=4.3.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=1.0.0",
+    "pytest-cov>=6.2.1",
+    "pytest-mock>=3.14.1",
+    "ruff>=0.11.5",
+]
+
+
+[build-system]
+requires = ["uv_build>=0.8.15,<0.9.0"]
+build-backend = "uv_build"
