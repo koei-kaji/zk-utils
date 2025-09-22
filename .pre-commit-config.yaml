@@ -1,0 +1,33 @@
+repos:
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.8.19
+    hooks:
+      - id: uv-lock
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.1
+    hooks:
+      - id: ruff
+        name: ruff (import sorting)
+        args: [--select, I, --fix-only, --exit-zero]
+      - id: ruff-format
+        name: ruff (formatting)
+      - id: ruff
+        name: ruff (linting)
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.18.2
+    hooks:
+      - id: mypy
+        name: mypy (type checking)
+        args: [--show-error-codes, .]
+        additional_dependencies: [pydantic-settings>=2.8.1, mcp>=1.6.0]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (tests)
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        always_run: true
