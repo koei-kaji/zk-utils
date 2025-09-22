@@ -16,5 +16,9 @@ lint:
 test:
 	@uv run pytest
 
+.PHONY: build
+build:
+	@uv build --refresh --no-cache
+
 .PHONY: pre-commit
-pre-commit: format lint test
+pre-commit: format lint test build
