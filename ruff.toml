@@ -16,7 +16,11 @@ select = [
   "W", # pycodestyle warngings
 ]
 
-ignore = []
+ignore = [
+    "RUF001", # 全角記号など`ambiguous unicode character`
+    "RUF002", # 全角記号など`ambiguous unicode character`
+    "RUF003", # 全角記号など`ambiguous unicode character`
+]
 
 unfixable = [
   "F401", # unused imports

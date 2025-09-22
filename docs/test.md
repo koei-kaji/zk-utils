@@ -50,6 +50,73 @@ uv run pytest -m unit
 uv run pytest -m "not slow"
 ```
 
+## 結合テスト実装ガイド
+
+### 対象範囲
+結合テストでは以下のレイヤー間の連携を検証：
+- Application Service ↔ Infrastructure Service
+- Infrastructure Service ↔ ZkClient
+- 依存性注入（DI）コンテナの動作
+
+### モック戦略
+```python
+@pytest.fixture
+def mock_subprocess_run(mocker) -> Mock:
+    """zkコマンドのsubprocess.runをモック化"""
+    return mocker.patch("subprocess.run")
+
+def test_get_notes_integration(self, mock_subprocess_run, injector) -> None:
+    # Given: zkコマンドの出力をモック
+    mock_subprocess_run.return_value.stdout = "/path/note.md|Test|tag1\n"
+    mock_subprocess_run.return_value.returncode = 0
+
+    service = injector.get(GetNotesService)
+
+    # When: サービス実行
+    result = service.handle(GetNotesInput())
+
+    # Then: 期待結果の確認
+    assert len(result.notes) == 1
+    mock_subprocess_run.assert_called_once()
+```
+
+### テストデータ管理
+```python
+# tests/integration/conftest.py
+@pytest.fixture
+def sample_zk_notes_output() -> str:
+    return (
+        "/path/to/note1.md|テストノート1|tag1,tag2\n"
+        "/path/to/note2.md|Title with | pipe|tag3\n"
+        "/path/to/note3.md|タグなしノート|\n"
+    )
+
+@pytest.fixture
+def sample_zk_tags_output() -> str:
+    return (
+        "tag1|5\n"
+        "tag2|3\n"
+        "tag3|1\n"
+    )
+```
+
+### 依存性注入テスト
+```python
+def test_di_container_integration(self, injector) -> None:
+    # Given: DIコンテナ
+
+    # When: 各サービスを取得
+    get_notes_service = injector.get(GetNotesService)
+    zk_client = injector.get(ZkClient)
+
+    # Then: 正常にインスタンス化されること
+    assert isinstance(get_notes_service, GetNotesService)
+    assert isinstance(zk_client, ZkClient)
+
+    # シングルトンパターンの確認
+    assert injector.get(ZkClient) is zk_client
+```
+
 ## 開発ワークフロー
 
 ### テスト駆動開発（TDD）
