@@ -36,7 +36,10 @@ class TestCreateNoteIntegration:
         assert result.note.path == Path(sample_zk_create_note_output)
         assert result.note.tags == []
 
-        # zkコマンドが正しい引数で呼ばれること
+        # @with_indexデコレータにより_execute_index()とcreate_noteで計2回の呼び出し
+        assert mock_subprocess_run.call_count == 2
+
+        # 最後の呼び出し（create_note）が正しい引数で呼ばれること
         call_args = mock_subprocess_run.call_args[0][0]
         assert "zk" in call_args
         assert "new" in call_args
@@ -68,6 +71,9 @@ class TestCreateNoteIntegration:
         assert result.note.title == japanese_title
         assert "日本語のタイトル" in result.note.title
         assert "📝" in result.note.title
+
+        # @with_indexデコレータにより2回の呼び出し
+        assert mock_subprocess_run.call_count == 2
 
         # zkコマンドに日本語タイトルが渡されること
         call_args = mock_subprocess_run.call_args[0][0]
@@ -162,6 +168,9 @@ class TestCreateNoteIntegration:
         # Then: 複雑なパスが正しく処理されること
         assert result.note.path == Path(sample_zk_create_note_output)
 
+        # @with_indexデコレータにより2回の呼び出し
+        assert mock_subprocess_run.call_count == 2
+
         # zkコマンドに複雑なパスが渡されること
         call_args = mock_subprocess_run.call_args[0][0]
         assert str(complex_path) in call_args
@@ -247,7 +256,10 @@ class TestCreateNoteCommandGeneration:
         # When: ノートを作成
         service.handle(input_data)
 
-        # Then: 正しいzkコマンドが生成されること
+        # Then: @with_indexデコレータにより2回の呼び出し
+        assert mock_subprocess_run.call_count == 2
+
+        # 正しいzkコマンドが生成されること
         call_args = mock_subprocess_run.call_args[0][0]
         expected_command = ["zk", "new", "--print-path", "--title", title, str(path)]
         assert call_args == expected_command
@@ -268,6 +280,9 @@ class TestCreateNoteCommandGeneration:
         # When: ノートを作成
         service.handle(input_data)
 
-        # Then: タイトルが正しく渡されること
+        # Then: @with_indexデコレータにより2回の呼び出し
+        assert mock_subprocess_run.call_count == 2
+
+        # タイトルが正しく渡されること
         call_args = mock_subprocess_run.call_args[0][0]
         assert title_with_spaces in call_args

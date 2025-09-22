@@ -40,7 +40,8 @@ class TestGetNotesIntegration:
         assert result.notes[0].title == "テストノート1"
         assert result.notes[0].path == Path("/path/to/note1.md")
         assert result.notes[0].tags == ["tag1", "tag2"]
-        mock_subprocess_run.assert_called_once()
+        # @with_indexデコレータにより_execute_index()が先に呼ばれるため、計2回の呼び出し
+        assert mock_subprocess_run.call_count == 2
 
     def test_get_notes_with_title_filter_should_apply_title_search(
         self,
