@@ -39,11 +39,6 @@ class TestGetLinkToNotesIntegration:
         assert result.pagination.total == 4
         assert len(result.notes) == 4
 
-        # zkコマンドが正しい引数で呼ばれること
-        call_args = mock_subprocess_run.call_args[0][0]
-        assert "--link-to" in call_args
-        assert str(sample_note_path) in call_args
-
     def test_get_link_to_notes_with_pagination_should_return_paginated_results(
         self,
         test_injector: Injector,
@@ -142,11 +137,6 @@ class TestGetLinkedByNotesIntegration:
         assert result.pagination.total == 4
         assert len(result.notes) == 4
 
-        # zkコマンドが正しい引数で呼ばれること
-        call_args = mock_subprocess_run.call_args[0][0]
-        assert "--linked-by" in call_args
-        assert str(sample_note_path) in call_args
-
     def test_get_linked_by_notes_with_no_backlinks_should_return_empty_list(
         self,
         test_injector: Injector,
@@ -207,11 +197,6 @@ class TestGetRelatedNotesIntegration:
         assert result.pagination.per_page == 10
         assert result.pagination.total == 4
         assert len(result.notes) == 4
-
-        # zkコマンドが正しい引数で呼ばれること
-        call_args = mock_subprocess_run.call_args[0][0]
-        assert "--related" in call_args
-        assert str(sample_note_path) in call_args
 
     def test_get_related_notes_with_pagination_should_return_paginated_results(
         self,

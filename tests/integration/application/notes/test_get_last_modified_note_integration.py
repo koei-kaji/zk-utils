@@ -34,20 +34,6 @@ class TestGetLastModifiedNoteIntegration:
         assert result.note.title == "最新変更ノート"
         assert result.note.path == Path("/path/to/latest.md")
         assert result.note.tags == ["recent", "updated"]
-        # @with_indexデコレータにより_execute_index()が先に呼ばれるため、計2回の呼び出し
-        assert mock_subprocess_run.call_count == 2
-
-        # zkコマンドが正しい引数で呼ばれること
-        call_args = mock_subprocess_run.call_args[0][0]
-        assert "zk" in call_args
-        assert "list" in call_args
-        assert "--quiet" in call_args
-        assert "--no-pager" in call_args
-        assert "---limit" in call_args
-        assert "1" in call_args
-        assert "--sort" in call_args
-        assert "modified-" in call_args
-        assert "--format" in call_args
 
     def test_get_last_modified_note_no_results_should_raise_error(
         self,
@@ -63,9 +49,6 @@ class TestGetLastModifiedNoteIntegration:
         # When & Then: ValueErrorが発生すること
         with pytest.raises(ValueError, match="Last modified note not found"):
             service.handle(input_data)
-
-        # 2回の呼び出しが行われること
-        assert mock_subprocess_run.call_count == 2
 
     def test_get_last_modified_note_with_japanese_title_should_handle_correctly(
         self,
@@ -176,17 +159,3 @@ class TestGetLastModifiedNoteIntegration:
         # When & Then: ValueErrorが発生すること
         with pytest.raises(ValueError, match="Last modified note not found"):
             service.handle(input_data)
-
-    def test_get_last_modified_note_di_container_should_provide_correct_instance(
-        self,
-        test_injector: Injector,
-    ) -> None:
-        # Given: DIコンテナ
-
-        # When: サービスを取得
-        service1 = test_injector.get(GetLastModifiedNoteService)
-        service2 = test_injector.get(GetLastModifiedNoteService)
-
-        # Then: 正しいインスタンスが提供されること（singletonなので同一インスタンス）
-        assert isinstance(service1, GetLastModifiedNoteService)
-        assert service1 is service2

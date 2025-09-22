@@ -71,15 +71,6 @@ def mock_subprocess_run(mocker: MockerFixture) -> Mock:
 
 
 @pytest.fixture
-def mock_successful_subprocess(
-    mock_subprocess_run: Mock, sample_zk_notes_output: str
-) -> Mock:
-    """正常なzkコマンド実行をモック化"""
-    mock_subprocess_run.return_value.stdout = sample_zk_notes_output
-    return mock_subprocess_run
-
-
-@pytest.fixture
 def mock_failed_subprocess(mock_subprocess_run: Mock) -> Mock:
     """失敗するzkコマンド実行をモック化"""
     mock_subprocess_run.side_effect = subprocess.CalledProcessError(
@@ -95,14 +86,6 @@ def test_injector() -> Injector:
 
 
 @pytest.fixture
-def test_zk_dir(tmp_path: Path) -> Path:
-    """テスト用zkディレクトリ"""
-    zk_dir = tmp_path / "test_zk"
-    zk_dir.mkdir()
-    return zk_dir
-
-
-@pytest.fixture
 def sample_note_path() -> Path:
     """テスト用ノートパス"""
     return Path("/path/to/test.md")
@@ -112,12 +95,6 @@ def sample_note_path() -> Path:
 def sample_note_title() -> str:
     """テスト用ノートタイトル"""
     return "テストノート"
-
-
-@pytest.fixture
-def sample_tags() -> list[str]:
-    """テスト用タグリスト"""
-    return ["tag1", "tag2", "programming"]
 
 
 @pytest.fixture
