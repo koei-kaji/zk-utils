@@ -300,7 +300,17 @@ def create_note(
 
 @mcp.tool()
 def get_last_modified_note() -> app_get_last_modified_note.GetLastModifiedNoteOutput:
-    """ """
+    """
+    Retrieve the most recently modified note from the zk collection.
+
+    This function returns the note that was last modified in the zk system,
+    which is useful for quickly accessing recently worked-on content or
+    continuing from where you left off.
+
+    Returns:
+        GetLastModifiedNoteOutput: The most recently modified note with its
+                                 title, path, content, tags, and timestamps
+    """
     service = injector.get(app_get_last_modified_note.GetLastModifiedNoteService)
 
     input_data = app_get_last_modified_note.GetLastModifiedNoteInput()
@@ -309,7 +319,17 @@ def get_last_modified_note() -> app_get_last_modified_note.GetLastModifiedNoteOu
 
 @mcp.tool()
 def get_tagless_notes() -> app_get_tagless_notes.GetTaglessNotesOutput:
-    """ """
+    """
+    Retrieve all notes that have no tags assigned.
+
+    This function returns a list of notes that don't have any tags associated
+    with them. This is useful for identifying notes that might need categorization
+    or for cleaning up your note organization system.
+
+    Returns:
+        GetTaglessNotesOutput: List of notes without tags, including their
+                             title, path, content, and timestamps
+    """
     service = injector.get(app_get_tagless_notes.GetTaglessNotesService)
 
     input_data = app_get_tagless_notes.GetTaglessNotesInput()
@@ -318,7 +338,17 @@ def get_tagless_notes() -> app_get_tagless_notes.GetTaglessNotesOutput:
 
 @mcp.tool()
 def get_random_note() -> app_get_random_note.GetRandomNoteOutput:
-    """ """
+    """
+    Retrieve a randomly selected note from the zk collection.
+
+    This function returns a random note from your zk system, which is useful
+    for serendipitous discovery, reviewing old content, or finding inspiration
+    from previously written notes.
+
+    Returns:
+        GetRandomNoteOutput: A randomly selected note with its title, path,
+                           content, tags, and timestamps
+    """
     service = injector.get(app_get_random_note.GetRandomNoteService)
 
     input_data = app_get_random_note.GetRandomNoteInput()
