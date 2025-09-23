@@ -168,6 +168,62 @@ class TestZkNoteRepositoryFindTaglessNotes:
         mock_client.get_tagless_notes.assert_called_once()
 
 
+class TestZkNoteRepositoryFindRandomNote:
+    """ZkNoteRepositoryのランダムノート取得機能テスト"""
+
+    @pytest.fixture
+    def mock_client(self, mocker: MockerFixture) -> Mock:
+        return mocker.create_autospec(ZkClient)
+
+    @pytest.fixture
+    def repository(self, mock_client: Mock) -> ZkNoteRepository:
+        return ZkNoteRepository(client=mock_client)
+
+    def test_find_random_note_success(
+        self, repository: ZkNoteRepository, mock_client: Mock
+    ) -> None:
+        # Given: ランダムノートが存在する
+        expected_note = Note(
+            title="Random Note",
+            path=Path("/path/random.md"),
+            tags=["random", "test"],
+        )
+        mock_client.get_random_note.return_value = expected_note
+
+        # When: ランダムノートを取得する
+        result = repository.find_random_note()
+
+        # Then: ZkClientのメソッドが呼ばれ、Noteオブジェクトが返されること
+        mock_client.get_random_note.assert_called_once()
+        assert result.title == expected_note.title
+        assert result.path == expected_note.path
+        assert result.tags == expected_note.tags
+
+    def test_find_random_note_no_result_should_raise_error(
+        self, repository: ZkNoteRepository, mock_client: Mock
+    ) -> None:
+        # Given: ランダムノートが存在しない
+        mock_client.get_random_note.return_value = None
+
+        # When & Then: ValueErrorが発生すること
+        with pytest.raises(ValueError, match="Last modified note not found"):
+            repository.find_random_note()
+
+        mock_client.get_random_note.assert_called_once()
+
+    def test_find_random_note_client_exception_should_propagate(
+        self, repository: ZkNoteRepository, mock_client: Mock
+    ) -> None:
+        # Given: ZkClientで例外が発生する
+        mock_client.get_random_note.side_effect = RuntimeError("Client error")
+
+        # When & Then: RuntimeErrorが伝播すること
+        with pytest.raises(RuntimeError, match="Client error"):
+            repository.find_random_note()
+
+        mock_client.get_random_note.assert_called_once()
+
+
 class TestZkNoteRepositoryCreateNote:
     """ZkNoteRepositoryのノート作成機能テスト"""
 

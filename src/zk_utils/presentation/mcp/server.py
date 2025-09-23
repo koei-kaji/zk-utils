@@ -12,6 +12,7 @@ from zk_utils.application.notes import get_link_to_notes as app_get_link_to_note
 from zk_utils.application.notes import get_linked_by_notes as app_get_linked_by_notes
 from zk_utils.application.notes import get_note_content as app_get_note_content
 from zk_utils.application.notes import get_notes as app_get_notes
+from zk_utils.application.notes import get_random_note as app_get_random_note
 from zk_utils.application.notes import get_related_notes as app_get_related_notes
 from zk_utils.application.notes import get_tagless_notes as app_get_tagless_notes
 from zk_utils.application.tags import get_tags as app_get_tags
@@ -312,6 +313,15 @@ def get_tagless_notes() -> app_get_tagless_notes.GetTaglessNotesOutput:
     service = injector.get(app_get_tagless_notes.GetTaglessNotesService)
 
     input_data = app_get_tagless_notes.GetTaglessNotesInput()
+    return service.handle(input_data)
+
+
+@mcp.tool()
+def get_random_note() -> app_get_random_note.GetRandomNoteOutput:
+    """ """
+    service = injector.get(app_get_random_note.GetRandomNoteService)
+
+    input_data = app_get_random_note.GetRandomNoteInput()
     return service.handle(input_data)
 
 

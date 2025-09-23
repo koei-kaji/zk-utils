@@ -57,3 +57,15 @@ class ZkNoteRepository(IFNoteRepository):
             )
             for result in results
         ]
+
+    def find_random_note(self) -> Note:
+        result = self._client.get_random_note()
+
+        if result is None:
+            raise ValueError("Last modified note not found")
+
+        return Note(
+            title=result.title,
+            path=result.path,
+            tags=result.tags,
+        )

@@ -5,6 +5,7 @@ from . import (
     get_linked_by_notes,
     get_note_content,
     get_notes,
+    get_random_note,
     get_related_notes,
     get_tagless_notes,
 )
@@ -18,6 +19,7 @@ __all__ = [
     "get_linked_by_notes",
     "get_note_content",
     "get_notes",
+    "get_random_note",
     "get_related_notes",
     "get_tagless_notes",
 ]

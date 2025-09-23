@@ -271,3 +271,32 @@ class ZkClient(BaseFrozenModel):
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
+
+    @with_index
+    def get_random_note(self) -> Note | None:
+        command = [
+            "zk",
+            "list",
+            "--quiet",
+            "--no-pager",
+            "--limit",
+            "1",
+            "--sort",
+            "random",
+            "--format",
+            FORMAT_NOTE,
+        ]
+
+        try:
+            stdout = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                cwd=self._cwd,
+                check=True,
+            )
+
+            return self._parse_note(stdout.stdout)
+
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Error: {e.stderr}") from e

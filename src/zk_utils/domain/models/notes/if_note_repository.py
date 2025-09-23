@@ -17,3 +17,6 @@ class IFNoteRepository(IFRepository):
 
     @abc.abstractmethod
     def find_tagless_notes(self) -> list[Note]: ...
+
+    @abc.abstractmethod
+    def find_random_note(self) -> Note: ...
