@@ -1,7 +1,7 @@
 [project]
 name = "zk-utils"
 version = "0.1.0"
-description = "Add your description here"
+description = "MCP server for zk note management with search, linking, and organization tools"
 readme = "README.md"
 authors = [
     { name = "koei-kaji", email = "koei.kaji@gmail.com" }
