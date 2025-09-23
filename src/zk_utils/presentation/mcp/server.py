@@ -4,41 +4,18 @@ from typing import Annotated, Literal
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
-from zk_utils.application.notes.create_note import (
-    CreateNoteInput,
-    CreateNoteOutput,
-    CreateNoteService,
+from zk_utils.application.notes import create_note as app_create_note
+from zk_utils.application.notes import (
+    get_last_modified_note as app_get_last_modified_note,
 )
-from zk_utils.application.notes.get_link_to_notes import (
-    GetLinkToNotesInput,
-    GetLinkToNotesOutput,
-    GetLinkToNotesService,
-)
-from zk_utils.application.notes.get_linked_by_notes import (
-    GetLinkedByNotesInput,
-    GetLinkedByNotesOutput,
-    GetLinkedByNotesService,
-)
-from zk_utils.application.notes.get_note_content import (
-    GetNoteContentInput,
-    GetNoteContentOutput,
-    GetNoteContentService,
-)
-from zk_utils.application.notes.get_notes import (
-    GetNotesInput,
-    GetNotesOutput,
-    GetNotesService,
-)
-from zk_utils.application.notes.get_related_notes import (
-    GetRelatedNotesInput,
-    GetRelatedNotesOutput,
-    GetRelatedNotesService,
-)
-from zk_utils.application.tags.get_tags import (
-    GetTagsInput,
-    GetTagsOutput,
-    GetTagsService,
-)
+from zk_utils.application.notes import get_link_to_notes as app_get_link_to_notes
+from zk_utils.application.notes import get_linked_by_notes as app_get_linked_by_notes
+from zk_utils.application.notes import get_note_content as app_get_note_content
+from zk_utils.application.notes import get_notes as app_get_notes
+from zk_utils.application.notes import get_random_note as app_get_random_note
+from zk_utils.application.notes import get_related_notes as app_get_related_notes
+from zk_utils.application.notes import get_tagless_notes as app_get_tagless_notes
+from zk_utils.application.tags import get_tags as app_get_tags
 from zk_utils.presentation.injector import injector
 
 mcp = FastMCP("zk-mcp")
@@ -98,7 +75,7 @@ def get_notes(
             "AND: notes must have all specified tags, OR: notes with any of the tags"
         ),
     ] = "AND",
-) -> GetNotesOutput:
+) -> app_get_notes.GetNotesOutput:
     """
     Search and retrieve a list of zk notes.
 
@@ -107,17 +84,11 @@ def get_notes(
     different search conditions to narrow down the results effectively.
 
     Returns:
-        GetNotesOutput: Search results containing:
-            - notes: List of notes (containing title, path, tags,
-              created_at, updated_at)
-            - total_count: Total number of matching notes
-            - page: Current page number
-            - per_page: Number of notes per page
-            - total_pages: Total number of pages
+        GetNotesOutput: Search results
     """
-    service = injector.get(GetNotesService)
+    service = injector.get(app_get_notes.GetNotesService)
 
-    input = GetNotesInput(
+    input = app_get_notes.GetNotesInput(
         page=page,
         per_page=per_page,
         title_patterns=title_patterns,
@@ -139,7 +110,7 @@ def get_note_content(
             "(e.g., 'notes/my-note.md' or '/absolute/path/to/note.md')"
         ),
     ],
-) -> GetNoteContentOutput:
+) -> app_get_note_content.GetNoteContentOutput:
     """
     Retrieve the full content of a specific zk note.
 
@@ -150,17 +121,11 @@ def get_note_content(
         path: The file path to the note you want to read
 
     Returns:
-        GetNoteContentOutput: Note content containing:
-            - title: The note's title
-            - content: The full content/body of the note
-            - path: The file path of the note
-            - tags: List of tags associated with the note
-            - created_at: Note creation timestamp
-            - updated_at: Last modification timestamp
+        GetNoteContentOutput: Note content
     """
-    service = injector.get(GetNoteContentService)
-    input = GetNoteContentInput(path=path)
-    return service.handle(input)
+    service = injector.get(app_get_note_content.GetNoteContentService)
+    input_data = app_get_note_content.GetNoteContentInput(path=path)
+    return service.handle(input_data)
 
 
 @mcp.tool()
@@ -176,7 +141,7 @@ def get_link_to_notes(
         int,
         Field(description="Number of linked notes to return per page. Default is 10."),
     ] = 10,
-) -> GetLinkToNotesOutput:
+) -> app_get_link_to_notes.GetLinkToNotesOutput:
     """
     Get all notes that are linked FROM the specified note.
 
@@ -190,16 +155,13 @@ def get_link_to_notes(
         per_page: Number of results per page
 
     Returns:
-        GetLinkToNotesOutput: Paginated list of linked notes containing:
-            - notes: List of notes that are linked to from the source note
-            - total_count: Total number of outbound links
-            - page: Current page number
-            - per_page: Number of notes per page
-            - total_pages: Total number of pages
+        GetLinkToNotesOutput: Linking notes
     """
-    service = injector.get(GetLinkToNotesService)
-    input = GetLinkToNotesInput(page=page, per_page=per_page, path=path)
-    return service.handle(input)
+    service = injector.get(app_get_link_to_notes.GetLinkToNotesService)
+    input_data = app_get_link_to_notes.GetLinkToNotesInput(
+        page=page, per_page=per_page, path=path
+    )
+    return service.handle(input_data)
 
 
 @mcp.tool()
@@ -215,7 +177,7 @@ def get_linked_by_notes(
         int,
         Field(description="Number of linking notes to return per page. Default is 10."),
     ] = 10,
-) -> GetLinkedByNotesOutput:
+) -> app_get_linked_by_notes.GetLinkedByNotesOutput:
     """
     Get all notes that link TO the specified note.
 
@@ -229,17 +191,13 @@ def get_linked_by_notes(
         per_page: Number of results per page
 
     Returns:
-        GetLinkedByNotesOutput: Paginated list of notes that link to the target note
-            containing:
-            - notes: List of notes that contain links to the target note
-            - total_count: Total number of inbound links
-            - page: Current page number
-            - per_page: Number of notes per page
-            - total_pages: Total number of pages
+        GetLinkedByNotesOutput: Linking notes
     """
-    service = injector.get(GetLinkedByNotesService)
+    service = injector.get(app_get_linked_by_notes.GetLinkedByNotesService)
 
-    input_data = GetLinkedByNotesInput(page=page, per_page=per_page, path=path)
+    input_data = app_get_linked_by_notes.GetLinkedByNotesInput(
+        page=page, per_page=per_page, path=path
+    )
     return service.handle(input_data)
 
 
@@ -248,7 +206,7 @@ def get_related_notes(
     path: Annotated[
         Path,
         Field(
-            description="File path to the note for finding related content "
+            description="File path to the note for finding link candidates "
             "(e.g., 'notes/my-note.md')"
         ),
     ],
@@ -257,37 +215,36 @@ def get_related_notes(
     ] = 1,
     per_page: Annotated[
         int,
-        Field(description="Number of related notes to return per page. Default is 10."),
+        Field(
+            description="Number of link candidates to return per page. Default is 10."
+        ),
     ] = 10,
-) -> GetRelatedNotesOutput:
+) -> app_get_related_notes.GetRelatedNotesOutput:
     """
-    Find notes that are related to the specified note.
+    Find notes that could be good candidates for linking to the specified note.
 
-    This function discovers notes that are semantically or topically
-    related to the given note. Related notes are typically found based on
-    shared tags, similar content, or other relationship indicators beyond
-    direct linking.
+    This function returns notes which are not connected to the given note,
+    but with at least one linked note in common. It helps discover potential
+    connections between notes in your notebook, making it easier to create
+    meaningful links and improve note organization.
 
     Args:
-        path: The file path of the note to find related content for
+        path: The file path of the note to find link candidates for
         page: Page number for pagination (starting from 1)
         per_page: Number of results per page
 
     Returns:
-        GetRelatedNotesOutput: Paginated list of related notes containing:
-            - notes: List of notes that are related to the source note
-            - total_count: Total number of related notes found
-            - page: Current page number
-            - per_page: Number of notes per page
-            - total_pages: Total number of pages
+        GetRelatedNotesOutput: Notes that could be linked to the specified note
     """
-    service = injector.get(GetRelatedNotesService)
-    input_data = GetRelatedNotesInput(page=page, per_page=per_page, path=path)
+    service = injector.get(app_get_related_notes.GetRelatedNotesService)
+    input_data = app_get_related_notes.GetRelatedNotesInput(
+        page=page, per_page=per_page, path=path
+    )
     return service.handle(input_data)
 
 
 @mcp.tool()
-def get_tags() -> GetTagsOutput:
+def get_tags() -> app_get_tags.GetTagsOutput:
     """
     Retrieve all available tags from the zk note collection.
 
@@ -296,13 +253,11 @@ def get_tags() -> GetTagsOutput:
     available tags for filtering or organizing notes.
 
     Returns:
-        GetTagsOutput: All available tags containing:
-            - tags: List of all tag names used in the note collection
-            - count: Number of unique tags available
+        GetTagsOutput: All available tags
     """
-    service = injector.get(GetTagsService)
+    service = injector.get(app_get_tags.GetTagsService)
 
-    input_data = GetTagsInput()
+    input_data = app_get_tags.GetTagsInput()
     return service.handle(input_data)
 
 
@@ -321,7 +276,7 @@ def create_note(
             "(e.g., 'notes/meeting-notes.md')"
         ),
     ],
-) -> CreateNoteOutput:
+) -> app_create_note.CreateNoteOutput:
     """
     Create a new zk note with the specified title and path.
 
@@ -335,19 +290,68 @@ def create_note(
               (including filename and extension)
 
     Returns:
-        CreateNoteOutput: Information about the created note containing:
-            - title: The note's title
-            - path: The file path where the note was created
-            - created_at: Timestamp when the note was created
-            - success: Boolean indicating if creation was successful
-
-    Raises:
-        Exception: If the note cannot be created
-                  (e.g., path already exists, permission issues)
+        CreateNoteOutput: created note
     """
-    service = injector.get(CreateNoteService)
+    service = injector.get(app_create_note.CreateNoteService)
 
-    input_data = CreateNoteInput(title=title, path=path)
+    input_data = app_create_note.CreateNoteInput(title=title, path=path)
+    return service.handle(input_data)
+
+
+@mcp.tool()
+def get_last_modified_note() -> app_get_last_modified_note.GetLastModifiedNoteOutput:
+    """
+    Retrieve the most recently modified note from the zk collection.
+
+    This function returns the note that was last modified in the zk system,
+    which is useful for quickly accessing recently worked-on content or
+    continuing from where you left off.
+
+    Returns:
+        GetLastModifiedNoteOutput: The most recently modified note with its
+                                 title, path, content, tags, and timestamps
+    """
+    service = injector.get(app_get_last_modified_note.GetLastModifiedNoteService)
+
+    input_data = app_get_last_modified_note.GetLastModifiedNoteInput()
+    return service.handle(input_data)
+
+
+@mcp.tool()
+def get_tagless_notes() -> app_get_tagless_notes.GetTaglessNotesOutput:
+    """
+    Retrieve all notes that have no tags assigned.
+
+    This function returns a list of notes that don't have any tags associated
+    with them. This is useful for identifying notes that might need categorization
+    or for cleaning up your note organization system.
+
+    Returns:
+        GetTaglessNotesOutput: List of notes without tags, including their
+                             title, path, content, and timestamps
+    """
+    service = injector.get(app_get_tagless_notes.GetTaglessNotesService)
+
+    input_data = app_get_tagless_notes.GetTaglessNotesInput()
+    return service.handle(input_data)
+
+
+@mcp.tool()
+def get_random_note() -> app_get_random_note.GetRandomNoteOutput:
+    """
+    Retrieve a randomly selected note from the zk collection.
+
+    This function returns a random note from your zk system, which is useful
+    for serendipitous discovery, reviewing old content, or finding inspiration
+    from previously written notes.
+
+    Returns:
+        GetRandomNoteOutput: A randomly selected note with its title, path,
+                           content, tags, and timestamps
+    """
+    service = injector.get(app_get_random_note.GetRandomNoteService)
+
+    input_data = app_get_random_note.GetRandomNoteInput()
     return service.handle(input_data)
 
 

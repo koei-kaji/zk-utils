@@ -75,7 +75,7 @@ class ZkClient(BaseFrozenModel):
                 check=True,
             )
 
-            return stdout.stdout
+            return stdout.stdout.strip()
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
@@ -184,6 +184,18 @@ class ZkClient(BaseFrozenModel):
 
         return notes
 
+    def get_tagless_notes(self) -> list[Note]:
+        results = self._execute_zk_list_multilines(FORMAT_NOTE, ["--tagless"])
+
+        notes: list[Note] = []
+        for result in results:
+            note = self._parse_note(result)
+            if note is None:
+                continue
+            notes.append(note)
+
+        return notes
+
     def get_note(self, path: Path) -> Note | None:
         result = self._execute_zk_list_single(FORMAT_NOTE, [str(path)])
         note = self._parse_note(result)
@@ -227,6 +239,64 @@ class ZkClient(BaseFrozenModel):
             path = Path(stdout.stdout)
 
             return Note(title=title, path=path, tags=[])
+
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Error: {e.stderr}") from e
+
+    @with_index
+    def get_last_modified_note(self) -> Note | None:
+        command = [
+            "zk",
+            "list",
+            "--quiet",
+            "--no-pager",
+            "--limit",
+            "1",
+            "--sort",
+            "modified-",
+            "--format",
+            FORMAT_NOTE,
+        ]
+
+        try:
+            stdout = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                cwd=self._cwd,
+                check=True,
+            )
+
+            return self._parse_note(stdout.stdout.strip())
+
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"Error: {e.stderr}") from e
+
+    @with_index
+    def get_random_note(self) -> Note | None:
+        command = [
+            "zk",
+            "list",
+            "--quiet",
+            "--no-pager",
+            "--limit",
+            "1",
+            "--sort",
+            "random",
+            "--format",
+            FORMAT_NOTE,
+        ]
+
+        try:
+            stdout = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                cwd=self._cwd,
+                check=True,
+            )
+
+            return self._parse_note(stdout.stdout.strip())
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
