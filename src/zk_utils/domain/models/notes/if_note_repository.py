@@ -14,3 +14,6 @@ class IFNoteRepository(IFRepository):
 
     @abc.abstractmethod
     def find_last_modified_note(self) -> Note: ...
+
+    @abc.abstractmethod
+    def find_tagless_notes(self) -> list[Note]: ...

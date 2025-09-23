@@ -13,6 +13,7 @@ from zk_utils.application.notes import get_linked_by_notes as app_get_linked_by_
 from zk_utils.application.notes import get_note_content as app_get_note_content
 from zk_utils.application.notes import get_notes as app_get_notes
 from zk_utils.application.notes import get_related_notes as app_get_related_notes
+from zk_utils.application.notes import get_tagless_notes as app_get_tagless_notes
 from zk_utils.application.tags import get_tags as app_get_tags
 from zk_utils.presentation.injector import injector
 
@@ -302,6 +303,15 @@ def get_last_modified_note() -> app_get_last_modified_note.GetLastModifiedNoteOu
     service = injector.get(app_get_last_modified_note.GetLastModifiedNoteService)
 
     input_data = app_get_last_modified_note.GetLastModifiedNoteInput()
+    return service.handle(input_data)
+
+
+@mcp.tool()
+def get_tagless_notes() -> app_get_tagless_notes.GetTaglessNotesOutput:
+    """ """
+    service = injector.get(app_get_tagless_notes.GetTaglessNotesService)
+
+    input_data = app_get_tagless_notes.GetTaglessNotesInput()
     return service.handle(input_data)
 
 

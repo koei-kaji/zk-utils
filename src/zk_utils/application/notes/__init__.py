@@ -6,6 +6,7 @@ from . import (
     get_note_content,
     get_notes,
     get_related_notes,
+    get_tagless_notes,
 )
 from .if_note_query_service import IFNoteQueryService
 
@@ -18,4 +19,5 @@ __all__ = [
     "get_note_content",
     "get_notes",
     "get_related_notes",
+    "get_tagless_notes",
 ]

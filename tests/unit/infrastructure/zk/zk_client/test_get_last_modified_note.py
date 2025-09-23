@@ -37,7 +37,7 @@ class TestZkClientGetLastModifiedNote:
                 "list",
                 "--quiet",
                 "--no-pager",
-                "---limit",
+                "--limit",
                 "1",
                 "--sort",
                 "modified-",

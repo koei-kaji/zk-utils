@@ -184,6 +184,18 @@ class ZkClient(BaseFrozenModel):
 
         return notes
 
+    def get_tagless_notes(self) -> list[Note]:
+        results = self._execute_zk_list_multilines(FORMAT_NOTE, ["--tagless"])
+
+        notes: list[Note] = []
+        for result in results:
+            note = self._parse_note(result)
+            if note is None:
+                continue
+            notes.append(note)
+
+        return notes
+
     def get_note(self, path: Path) -> Note | None:
         result = self._execute_zk_list_single(FORMAT_NOTE, [str(path)])
         note = self._parse_note(result)
@@ -238,7 +250,7 @@ class ZkClient(BaseFrozenModel):
             "list",
             "--quiet",
             "--no-pager",
-            "---limit",
+            "--limit",
             "1",
             "--sort",
             "modified-",

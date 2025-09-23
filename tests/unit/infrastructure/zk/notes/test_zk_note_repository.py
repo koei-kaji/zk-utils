@@ -100,6 +100,74 @@ class TestZkNoteRepositoryFindNoteContent:
         assert result.content == expected_note.content
 
 
+class TestZkNoteRepositoryFindTaglessNotes:
+    """ZkNoteRepositoryのタグなしノート取得機能テスト"""
+
+    @pytest.fixture
+    def mock_client(self, mocker: MockerFixture) -> Mock:
+        return mocker.create_autospec(ZkClient)
+
+    @pytest.fixture
+    def repository(self, mock_client: Mock) -> ZkNoteRepository:
+        return ZkNoteRepository(client=mock_client)
+
+    def test_find_tagless_notes_success(
+        self, repository: ZkNoteRepository, mock_client: Mock
+    ) -> None:
+        # Given: タグなしノートが存在する
+        expected_notes = [
+            Note(
+                title="Note without tags 1",
+                path=Path("/path/note1.md"),
+                tags=[],
+            ),
+            Note(
+                title="Note without tags 2",
+                path=Path("/path/note2.md"),
+                tags=[],
+            ),
+        ]
+        mock_client.get_tagless_notes.return_value = expected_notes
+
+        # When: タグなしノートを取得する
+        result = repository.find_tagless_notes()
+
+        # Then: ZkClientのメソッドが呼ばれ、Noteオブジェクトのリストが返されること
+        mock_client.get_tagless_notes.assert_called_once()
+        assert len(result) == 2
+        assert result[0].title == expected_notes[0].title
+        assert result[0].path == expected_notes[0].path
+        assert result[0].tags == expected_notes[0].tags
+        assert result[1].title == expected_notes[1].title
+        assert result[1].path == expected_notes[1].path
+        assert result[1].tags == expected_notes[1].tags
+
+    def test_find_tagless_notes_empty_result(
+        self, repository: ZkNoteRepository, mock_client: Mock
+    ) -> None:
+        # Given: タグなしノートが存在しない
+        mock_client.get_tagless_notes.return_value = []
+
+        # When: タグなしノートを取得する
+        result = repository.find_tagless_notes()
+
+        # Then: 空のリストが返されること
+        mock_client.get_tagless_notes.assert_called_once()
+        assert len(result) == 0
+
+    def test_find_tagless_notes_client_exception_should_propagate(
+        self, repository: ZkNoteRepository, mock_client: Mock
+    ) -> None:
+        # Given: ZkClientで例外が発生する
+        mock_client.get_tagless_notes.side_effect = RuntimeError("Client error")
+
+        # When & Then: RuntimeErrorが伝播すること
+        with pytest.raises(RuntimeError, match="Client error"):
+            repository.find_tagless_notes()
+
+        mock_client.get_tagless_notes.assert_called_once()
+
+
 class TestZkNoteRepositoryCreateNote:
     """ZkNoteRepositoryのノート作成機能テスト"""
 

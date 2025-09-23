@@ -45,3 +45,15 @@ class ZkNoteRepository(IFNoteRepository):
             path=result.path,
             tags=result.tags,
         )
+
+    def find_tagless_notes(self) -> list[Note]:
+        results = self._client.get_tagless_notes()
+
+        return [
+            Note(
+                title=result.title,
+                path=result.path,
+                tags=result.tags,
+            )
+            for result in results
+        ]
