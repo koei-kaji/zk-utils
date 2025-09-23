@@ -35,9 +35,7 @@ def sample_zk_single_note_output() -> str:
 @pytest.fixture
 def sample_zk_note_content_output() -> str:
     """zkコマンドのget_content出力例"""
-    return (
-        "# テストノート\n\nこれはテスト用のノート内容です。\n\n## セクション1\n内容1\n"
-    )
+    return "# テストノート\n\nこれはテスト用のノート内容です。\n\n## セクション1\n内容1"
 
 
 @pytest.fixture

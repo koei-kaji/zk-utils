@@ -75,7 +75,7 @@ class ZkClient(BaseFrozenModel):
                 check=True,
             )
 
-            return stdout.stdout
+            return stdout.stdout.strip()
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
@@ -267,7 +267,7 @@ class ZkClient(BaseFrozenModel):
                 check=True,
             )
 
-            return self._parse_note(stdout.stdout)
+            return self._parse_note(stdout.stdout.strip())
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e
@@ -296,7 +296,7 @@ class ZkClient(BaseFrozenModel):
                 check=True,
             )
 
-            return self._parse_note(stdout.stdout)
+            return self._parse_note(stdout.stdout.strip())
 
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Error: {e.stderr}") from e

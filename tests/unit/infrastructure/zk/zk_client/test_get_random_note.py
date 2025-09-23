@@ -168,3 +168,21 @@ class TestZkClientGetRandomNote:
         assert note.title == "Title with | pipe"
         assert note.path == Path("/path/pipe.md")
         assert note.tags == ["tag1", "tag2"]
+
+    def test_get_random_note_with_trailing_newline_in_tags(
+        self, client: ZkClient, mocker: MockerFixture
+    ) -> None:
+        # Given: 最後のタグに改行が含まれる出力（修正前の問題ケース）
+        mock_run = mocker.patch("subprocess.run")
+        mock_result = Mock()
+        mock_result.stdout = "/path/note.md|Note Title|terminal,zsh,git\n"
+        mock_run.return_value = mock_result
+
+        # When: ランダムノートを取得する
+        note = client.get_random_note()
+
+        # Then: 改行が除去されて正しく処理されること
+        assert note is not None
+        assert note.title == "Note Title"
+        assert note.path == Path("/path/note.md")
+        assert note.tags == ["terminal", "zsh", "git"]  # 改行除去済み

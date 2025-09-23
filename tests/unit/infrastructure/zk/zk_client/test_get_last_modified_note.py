@@ -96,3 +96,21 @@ class TestZkClientGetLastModifiedNote:
 
         # Then: Noneが返されること
         assert note is None
+
+    def test_get_last_modified_note_with_trailing_newline_in_tags(
+        self, client: ZkClient, mocker: MockerFixture
+    ) -> None:
+        # Given: 最後のタグに改行が含まれる出力（修正前の問題ケース）
+        mock_run = mocker.patch("subprocess.run")
+        mock_result = Mock()
+        mock_result.stdout = "/path/latest.md|Latest Note|terminal,zsh,git\n"
+        mock_run.return_value = mock_result
+
+        # When: 最新変更ノートを取得する
+        note = client.get_last_modified_note()
+
+        # Then: 改行が除去されて正しく処理されること
+        assert note is not None
+        assert note.title == "Latest Note"
+        assert note.path == Path("/path/latest.md")
+        assert note.tags == ["terminal", "zsh", "git"]  # 改行除去済み

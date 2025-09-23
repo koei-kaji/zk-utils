@@ -91,7 +91,7 @@ class TestGetNoteContentIntegration:
         sample_note_path: Path,
     ) -> None:
         # Given: Unicode文字を含むコンテンツ
-        unicode_content = "# ユニコードテスト\n\n日本語コンテンツ 🎯\n\nαβγδεζ\n"
+        unicode_content = "# ユニコードテスト\n\n日本語コンテンツ 🎯\n\nαβγδεζ"
         mock_subprocess_run.side_effect = [
             type("MockResult", (), {"stdout": "", "returncode": 0, "stderr": ""})(),
             type(
@@ -150,7 +150,7 @@ class TestGetNoteContentIntegration:
         result = service.handle(input_data)
 
         # Then: 大きなコンテンツが正しく処理されること
-        assert result.content == large_content
+        assert result.content == large_content.strip()
         assert result.content.count("テスト行") == 1000
 
     def test_get_note_content_with_zk_command_error_should_raise_runtime_error(
@@ -222,7 +222,7 @@ def hello():
         result = service.handle(input_data)
 
         # Then: Markdownフォーマットが保持されること
-        assert result.content == markdown_content
+        assert result.content == markdown_content.strip()
         assert "# メインタイトル" in result.content
         assert "**太字**" in result.content
         assert "```python" in result.content
