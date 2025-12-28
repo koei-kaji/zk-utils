@@ -29,13 +29,16 @@ Add the following to mcp configuration file:
 
 ## Available MCP Tools
 
-- `get_notes`: Get note list (with pagination, search, and tag filtering)
-- `get_note_content`: Get content of specified note
-- `get_link_to_notes`: Get notes linked from specified note
-- `get_linked_by_notes`: Get notes linking to specified note
-- `get_related_notes`: Get related notes
-- `get_tags`: Get tag list
-- `create_note`: Create new note
+- `get_notes`: Search and retrieve zk notes with filtering and pagination
+- `get_note_content`: Retrieve the full content of a specific zk note
+- `get_link_to_notes`: Get all notes that are linked FROM the specified note (outbound links)
+- `get_linked_by_notes`: Get all notes that link TO the specified note (inbound links)
+- `get_related_notes`: Find notes that could be good candidates for linking
+- `get_tags`: Retrieve all available tags from the zk note collection
+- `create_note`: Create a new zk note with the specified title and path
+- `get_last_modified_note`: Retrieve the most recently modified note
+- `get_tagless_notes`: Retrieve all notes that have no tags assigned
+- `get_random_note`: Retrieve a randomly selected note from the zk collection
 
 ## Environment Variables
 
