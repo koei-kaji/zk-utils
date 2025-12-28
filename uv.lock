@@ -277,6 +277,23 @@ wheels = [
 ]
 
 [[package]]
+name = "markdown-it-pyrs"
+version = "0.4.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/1b/6f48b6da3594f1d383dcbd6e2eb1f3a39466807d8f6af607b522b2d912ed/markdown_it_pyrs-0.4.0.tar.gz", hash = "sha256:fa98efe22ab78de494ee66bbdae8c20a40ccb4137c835197db2a5ee56797c929", size = 111586, upload-time = "2024-10-22T03:19:08.762Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f4/18/7957ab1e045fafad7ced3082e38790db0169e8e919964a108688101103cd/markdown_it_pyrs-0.4.0-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:c8b3a044d51e324410ba613afd56117cfef097aee147a83ccef2e34455559194", size = 1191846, upload-time = "2024-10-22T03:18:12.747Z" },
+    { url = "https://files.pythonhosted.org/packages/22/40/efd636886a7f3d2f0d8cd0b54eefca63e4b62880eaf0ea273eebd8aee498/markdown_it_pyrs-0.4.0-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:635f029ccaae6f8c171b8faae9788b92eac53ca2db7f3ca7ceac97b5a903620d", size = 1143105, upload-time = "2024-10-22T03:18:15.323Z" },
+    { url = "https://files.pythonhosted.org/packages/ab/4e/db290d4779777b189a071e4914fe5d7b9d9201fe4244faf2e29e5d8ab8d7/markdown_it_pyrs-0.4.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f30dfc0cee263b6d9dc3698c3097a1f86373205214a02e21ecea80653c5d241f", size = 1338536, upload-time = "2024-10-22T03:18:17.595Z" },
+    { url = "https://files.pythonhosted.org/packages/6f/19/fe870c54d3de0dd8df20d8637e6d90cfd5afa94c3f635e6411b3ec93cf1a/markdown_it_pyrs-0.4.0-cp312-cp312-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:85f2267a664c6b0d3b15747153c16265c798c064d4861de9699eb94ce7d507b4", size = 1310021, upload-time = "2024-10-22T03:18:19.414Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/16/b74a6a48c780e65b49b769e77348dfffcdc478b8eaa8383c93694a127ec5/markdown_it_pyrs-0.4.0-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:00260290b296122ae9653038432c3a9123b7c73cc2c162418318fdecc20ff7bf", size = 1457375, upload-time = "2024-10-22T03:18:21.281Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/da/4d3a6532219a70fbbd14839f609ba47efb5ac154eb7f109494bb5bb64401/markdown_it_pyrs-0.4.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:65ec562dce235ba6c6adc59f1a488ba4c4836bf42cf8a92009f664f64d43687c", size = 1383146, upload-time = "2024-10-22T03:18:23.28Z" },
+    { url = "https://files.pythonhosted.org/packages/9a/e9/0f4ce3447dfedaaa2c91b56e58a3848dee1df86674d8b7176c695a28ceb2/markdown_it_pyrs-0.4.0-cp312-cp312-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:4a4d3a3a15501e4d78f1969a6be9105efebe75f515d5975f871a59a31723e324", size = 1412070, upload-time = "2024-10-22T03:18:25.68Z" },
+    { url = "https://files.pythonhosted.org/packages/d6/bd/452a547ea3fd7cd402d78dbd625be22cc1440d543340e79c71df25169af5/markdown_it_pyrs-0.4.0-cp312-none-win32.whl", hash = "sha256:084a81a507ab6a23aa851c8f4e159aa5c66d2422bc735462677ec949c106a293", size = 937558, upload-time = "2024-10-22T03:18:27.313Z" },
+    { url = "https://files.pythonhosted.org/packages/a2/aa/e3bd55552ad44c572a90fafdd327c2663e6d6484b41ec2e8f4461ff4e558/markdown_it_pyrs-0.4.0-cp312-none-win_amd64.whl", hash = "sha256:61f18e088ac1724002a987ebaf40d15f62e1ffee1856fd9e7979a2388bc50d6f", size = 992600, upload-time = "2024-10-22T03:18:28.883Z" },
+]
+
+[[package]]
 name = "mcp"
 version = "1.14.1"
 source = { registry = "https://pypi.org/simple" }
@@ -852,10 +869,11 @@ wheels = [
 
 [[package]]
 name = "zk-utils"
-version = "0.1.0"
+version = "0.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "injector" },
+    { name = "markdown-it-pyrs" },
     { name = "mcp", extra = ["cli"] },
     { name = "pydantic-settings" },
 ]
@@ -874,6 +892,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "injector", specifier = ">=0.22.0" },
+    { name = "markdown-it-pyrs", specifier = ">=0.4.0" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.6.0" },
     { name = "pydantic-settings", specifier = ">=2.0.0" },
 ]
