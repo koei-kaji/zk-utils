@@ -62,10 +62,14 @@ def get_notes(
 @mcp.tool()
 def get_note_content(
     path: Annotated[Path, Field(description="File path to the note")],
+    headings: Annotated[
+        list[str] | None,
+        Field(description="List of h2 headings to extract (optional)"),
+    ] = None,
 ) -> app_get_note_content.GetNoteContentOutput:
     """Retrieve the full content of a specific zk note."""
     service = injector.get(app_get_note_content.GetNoteContentService)
-    input_data = app_get_note_content.GetNoteContentInput(path=path)
+    input_data = app_get_note_content.GetNoteContentInput(path=path, headings=headings)
     return service.handle(input_data)
 
 
