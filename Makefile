@@ -26,3 +26,40 @@ update-pre-commit:
 .PHONY: mcp-run
 mcp-run:
 	@ZK_DIR=. uv run mcp dev src/zk_utils/presentation/mcp/server.py
+
+# Docker関連の変数
+DOCKER_USERNAME ?= koeikajihome
+DOCKER_IMAGE = zk-utils-mcp
+VERSION = $(shell uv version --short)
+DOCKER_TAG ?= latest
+
+.PHONY: docker-login
+docker-login:
+	@docker login
+
+.PHONY: docker-build
+docker-build:
+	@docker build -t $(DOCKER_USERNAME)/$(DOCKER_IMAGE):$(DOCKER_TAG) .
+	@docker tag $(DOCKER_USERNAME)/$(DOCKER_IMAGE):$(DOCKER_TAG) $(DOCKER_USERNAME)/$(DOCKER_IMAGE):$(VERSION)
+
+.PHONY: docker-push
+docker-push:
+	@docker push $(DOCKER_USERNAME)/$(DOCKER_IMAGE):$(DOCKER_TAG)
+	@docker push $(DOCKER_USERNAME)/$(DOCKER_IMAGE):$(VERSION)
+
+.PHONY: docker-all
+docker-all: docker-build docker-push
+
+.PHONY: docker-run
+docker-run:
+	@docker run -it --rm \
+		-v $(ZK_NOTES_DIR):/zk-notes:ro \
+		$(DOCKER_USERNAME)/$(DOCKER_IMAGE):$(DOCKER_TAG)
+
+.PHONY: docker-compose-up
+docker-compose-up:
+	@docker compose up
+
+.PHONY: docker-compose-down
+docker-compose-down:
+	@docker compose down
