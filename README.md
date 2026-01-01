@@ -38,7 +38,7 @@ If you are creating a zk notebook for the first time, initialize the note direct
 
 ```bash
 cd /path/to/your/zk-notes
-docker run -it --rm -v $(pwd):/zk-notes koeikajidev/zk-utils-mcp zk init
+docker run -it --rm -v $(pwd):/zk-notes -w /zk-notes koeikajidev/zk-utils-mcp zk init
 ```
 
 #### MCP Configuration
