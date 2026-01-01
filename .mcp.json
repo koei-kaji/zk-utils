@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "zk-utils": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/Users/koei-kaji/src/github.com/koei-kaji/zk-utils:/zk-notes:ro",
+        "zk-utils-mcp"
+      ]
+    }
+  }
+}

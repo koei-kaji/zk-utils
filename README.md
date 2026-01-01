@@ -8,8 +8,7 @@ zk-utils is an MCP (Model Context Protocol) server for zk note management tools.
 
 ## Usage
 
-
-### MCP Configuration
+### Using uvx (Recommended)
 
 Add the following to mcp configuration file:
 
@@ -27,6 +26,45 @@ Add the following to mcp configuration file:
 }
 ```
 
+### Environment Variables
+
+- `ZK_DIR`: Path to zk notes directory (required)
+
+### Using Docker
+
+#### Initial Setup
+
+If you are creating a zk notebook for the first time, initialize the note directory with `zk init`:
+
+```bash
+cd /path/to/your/zk-notes
+docker run -it --rm -v $(pwd):/zk-notes koeikajidev/zk-utils-mcp zk init
+```
+
+#### MCP Configuration
+
+Add the following to mcp configuration file:
+
+```json
+{
+  "mcpServers": {
+    "zk-utils": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/absolute/path/to/your/zk-notes:/zk-notes:ro",
+        "koeikajidev/zk-utils-mcp"
+      ]
+    }
+  }
+}
+```
+
+**Note**: Use absolute path for the zk-notes directory.
+
 ## Available MCP Tools
 
 - `get_notes`: Search and retrieve zk notes with filtering and pagination
@@ -39,7 +77,3 @@ Add the following to mcp configuration file:
 - `get_last_modified_note`: Retrieve the most recently modified note
 - `get_tagless_notes`: Retrieve all notes that have no tags assigned
 - `get_random_note`: Retrieve a randomly selected note from the zk collection
-
-## Environment Variables
-
-- `ZK_DIR`: Path to zk notes directory (required)
