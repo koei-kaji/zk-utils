@@ -42,6 +42,24 @@ def get_notes(
     tags_match_mode: Annotated[
         Literal["AND", "OR"], Field(description="Tag matching mode (AND/OR)")
     ] = "AND",
+    created_after: Annotated[
+        str | None,
+        Field(
+            description=(
+                "Filter by creation date "
+                "(e.g., 'yesterday', 'last monday', 'last two weeks', '2021', 'Feb 3')"
+            )
+        ),
+    ] = None,
+    modified_after: Annotated[
+        str | None,
+        Field(
+            description=(
+                "Filter by modification date "
+                "(e.g., 'yesterday', 'last monday', 'last two weeks', '2021', 'Feb 3')"
+            )
+        ),
+    ] = None,
 ) -> app_get_notes.GetNotesOutput:
     """Search and retrieve zk notes with filtering and pagination."""
     service = injector.get(app_get_notes.GetNotesService)
@@ -55,6 +73,8 @@ def get_notes(
         search_match_mode=search_match_mode,
         tags=tags,
         tags_match_mode=tags_match_mode,
+        created_after=created_after,
+        modified_after=modified_after,
     )
     return service.handle(input)
 

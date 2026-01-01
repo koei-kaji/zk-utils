@@ -83,8 +83,22 @@ class ZkNoteQueryService(IFNoteQueryService):
             tag_delimiter = ", " if input_data.tags_match_mode == "AND" else "OR"
             tag_conditions = ["--tag", f"{tag_delimiter}".join(input_data.tags)]
 
+        # created after
+        created_after_conditions = []
+        if input_data.created_after is not None:
+            created_after_conditions = ["--created-after", input_data.created_after]
+
+        # modified after
+        modified_after_conditions = []
+        if input_data.modified_after is not None:
+            modified_after_conditions = ["--modified-after", input_data.modified_after]
+
         results = self._client.get_notes(
-            title_conditions + search_conditions + tag_conditions
+            title_conditions
+            + search_conditions
+            + tag_conditions
+            + created_after_conditions
+            + modified_after_conditions
         )
 
         notes: list[Note] = []
