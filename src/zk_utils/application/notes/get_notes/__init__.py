@@ -17,6 +17,8 @@ class GetNotesInput(ABCInput):
     search_match_mode: Literal["AND", "OR"] = "AND"
     tags: list[str]
     tags_match_mode: Literal["AND", "OR"] = "AND"
+    created_after: str | None = None
+    modified_after: str | None = None
 
 
 class GetNotesOutput(ABCOutput):
