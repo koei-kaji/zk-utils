@@ -6,6 +6,8 @@ zk-utils is an MCP (Model Context Protocol) server for zk note management tools.
 
 - [zk](https://github.com/zk-org/zk) command line tool
 
+> **Note on index freshness:** zk-utils returns whatever is currently in zk's SQLite index. zk's LSP auto-reindexes on saves through an LSP-aware editor, but edits made by other tools (shell scripts, sync, AI agents writing notes directly) leave the index stale until you run `zk index`. On macOS, [zk-reindex-launchd](https://github.com/johntrandall/zk-reindex-launchd) is a small LaunchAgent that runs `zk index` on a 5-minute cycle across every notebook on the machine — set-and-forget. On Linux, a systemd timer or `cron` running `zk index` works the same way.
+
 ## Usage
 
 ### Using uvx (Recommended)
