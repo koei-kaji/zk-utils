@@ -81,7 +81,7 @@ def get_notes(
 
 @mcp.tool()
 def get_note_content(
-    path: Annotated[Path, Field(description="File path to the note")],
+    path: Annotated[str, Field(description="File path to the note")],
     headings: Annotated[
         list[str] | None,
         Field(description="List of h2 headings to extract (optional)"),
@@ -89,27 +89,29 @@ def get_note_content(
 ) -> app_get_note_content.GetNoteContentOutput:
     """Retrieve the full content of a specific zk note."""
     service = injector.get(app_get_note_content.GetNoteContentService)
-    input_data = app_get_note_content.GetNoteContentInput(path=path, headings=headings)
+    input_data = app_get_note_content.GetNoteContentInput(
+        path=Path(path), headings=headings
+    )
     return service.handle(input_data)
 
 
 @mcp.tool()
 def get_link_to_notes(
-    path: Annotated[Path, Field(description="File path to the source note")],
+    path: Annotated[str, Field(description="File path to the source note")],
     page: Annotated[int, Field(description="Page number (starting from 1)")] = 1,
     per_page: Annotated[int, Field(description="Number of notes per page")] = 10,
 ) -> app_get_link_to_notes.GetLinkToNotesOutput:
     """Get all notes that are linked FROM the specified note (outbound links)."""
     service = injector.get(app_get_link_to_notes.GetLinkToNotesService)
     input_data = app_get_link_to_notes.GetLinkToNotesInput(
-        page=page, per_page=per_page, path=path
+        page=page, per_page=per_page, path=Path(path)
     )
     return service.handle(input_data)
 
 
 @mcp.tool()
 def get_linked_by_notes(
-    path: Annotated[Path, Field(description="File path to the target note")],
+    path: Annotated[str, Field(description="File path to the target note")],
     page: Annotated[int, Field(description="Page number (starting from 1)")] = 1,
     per_page: Annotated[int, Field(description="Number of notes per page")] = 10,
 ) -> app_get_linked_by_notes.GetLinkedByNotesOutput:
@@ -117,21 +119,21 @@ def get_linked_by_notes(
     service = injector.get(app_get_linked_by_notes.GetLinkedByNotesService)
 
     input_data = app_get_linked_by_notes.GetLinkedByNotesInput(
-        page=page, per_page=per_page, path=path
+        page=page, per_page=per_page, path=Path(path)
     )
     return service.handle(input_data)
 
 
 @mcp.tool()
 def get_related_notes(
-    path: Annotated[Path, Field(description="File path to the note")],
+    path: Annotated[str, Field(description="File path to the note")],
     page: Annotated[int, Field(description="Page number (starting from 1)")] = 1,
     per_page: Annotated[int, Field(description="Number of notes per page")] = 10,
 ) -> app_get_related_notes.GetRelatedNotesOutput:
     """Find notes that could be good candidates for linking."""
     service = injector.get(app_get_related_notes.GetRelatedNotesService)
     input_data = app_get_related_notes.GetRelatedNotesInput(
-        page=page, per_page=per_page, path=path
+        page=page, per_page=per_page, path=Path(path)
     )
     return service.handle(input_data)
 
@@ -149,13 +151,13 @@ def get_tags() -> app_get_tags.GetTagsOutput:
 def create_note(
     title: Annotated[str, Field(description="Title of the new note")],
     path: Annotated[
-        Path, Field(description="File path where the note should be created")
+        str, Field(description="File path where the note should be created")
     ],
 ) -> app_create_note.CreateNoteOutput:
     """Create a new zk note with the specified title and path."""
     service = injector.get(app_create_note.CreateNoteService)
 
-    input_data = app_create_note.CreateNoteInput(title=title, path=path)
+    input_data = app_create_note.CreateNoteInput(title=title, path=Path(path))
     return service.handle(input_data)
 
 

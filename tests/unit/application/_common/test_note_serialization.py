@@ -10,3 +10,9 @@ def test_path_should_be_serialized_as_string_in_json_mode() -> None:
     assert note.path == path
     assert note.model_dump()["path"] == path
     assert note.model_dump(mode="json")["path"] == str(path)
+
+
+def test_path_json_schema_should_not_include_path_format() -> None:
+    path_schema = Note.model_json_schema()["properties"]["path"]
+
+    assert path_schema == {"title": "Path", "type": "string"}
