@@ -1,23 +1,30 @@
 # Stage 1: Build zk from source
 FROM golang:1.25-bookworm AS zk-builder
 
+ARG ZK_VERSION=v0.15.4
+
 # Install dependencies for building zk
 # hadolint ignore=DL3008
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git make build-essential && \
     rm -rf /var/lib/apt/lists/*
 
-# Clone and build zk
+# Clone a reproducible zk release and update the vulnerable transitive module.
 WORKDIR /tmp/zk
-RUN git clone https://github.com/zk-org/zk.git . && \
+RUN git clone --branch "${ZK_VERSION}" --depth 1 https://github.com/zk-org/zk.git . && \
+    go get golang.org/x/crypto@v0.52.0 && \
+    go get golang.org/x/text@v0.39.0 && \
     make && \
     cp zk /usr/local/bin/zk
 
 # Stage 2: Final image with Python and MCP server
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
 
-# Upgrade pip and create non-root user
-RUN pip install --no-cache-dir --upgrade pip==25.3 && \
+# Apply available Debian security updates, upgrade pip, and create non-root user.
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip install --no-cache-dir --upgrade pip==25.3 && \
     useradd -m -u 1000 app
 
 # Install build dependencies for Rust packages
@@ -41,7 +48,8 @@ COPY src ./src
 # Install dependencies and change ownership
 ENV UV_NO_DEV=1
 RUN uv sync --frozen && \
-    chown -R app:app /app
+    chown -R app:app /app && \
+    rm -rf /root/.cache
 
 # Create zk-notes directory for mounting
 RUN mkdir -p /zk-notes && chown app:app /zk-notes
@@ -54,8 +62,8 @@ RUN apt-get purge -y --auto-remove build-essential
 ENV ZK_DIR=/zk-notes
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Switch to non-root user
-USER app
+# Switch to non-root user by UID so it is resolvable independently of /etc/passwd.
+USER 1000
 
 # Metadata labels for Docker Hub
 ARG VERSION
@@ -72,4 +80,7 @@ LABEL org.opencontainers.image.documentation="https://github.com/koei-kaji/zk-ut
 EXPOSE 0
 
 # Run MCP server using uv
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+    CMD ["python", "-c", "import zk_utils"]
+
 CMD ["uv", "run", "zk-utils-mcp"]

@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Annotated, Literal
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server import MCPServer
 from pydantic import Field
 
 from zk_utils.application.notes import create_note as app_create_note
@@ -18,7 +18,7 @@ from zk_utils.application.notes import get_tagless_notes as app_get_tagless_note
 from zk_utils.application.tags import get_tags as app_get_tags
 from zk_utils.presentation.injector import injector
 
-mcp = FastMCP("zk-mcp")
+mcp = MCPServer("zk-mcp")
 
 
 @mcp.tool()

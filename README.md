@@ -77,3 +77,7 @@ Add the following to mcp configuration file:
 - `get_last_modified_note`: Retrieve the most recently modified note
 - `get_tagless_notes`: Retrieve all notes that have no tags assigned
 - `get_random_note`: Retrieve a randomly selected note from the zk collection
+
+## Index Freshness
+
+zk-utils automatically runs `zk index --quiet` before operations that rely on zk's index. Notes changed outside an LSP-aware editor, such as by shell scripts, sync tools, or AI agents, are therefore reindexed before zk-utils queries them; no separate scheduled reindexing is required for zk-utils itself.
