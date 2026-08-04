@@ -26,7 +26,9 @@ update-pre-commit:
 
 .PHONY: mcp-run
 mcp-run:
-	@ZK_DIR=. uv run mcp dev src/zk_utils/presentation/mcp/server.py
+	@npx @modelcontextprotocol/inspector \
+		-e ZK_DIR="$(CURDIR)" \
+		uv run mcp run src/zk_utils/presentation/mcp/server.py
 
 # Docker関連の変数
 DOCKER_USERNAME ?= koeikajidev
@@ -60,9 +62,10 @@ docker-build:
 docker-scan:
 	@docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 		goodwithtech/dockle:v$(DOCKLE_LATEST) --no-color -af settings.py $(DOCKER_IMAGE):$(VERSION)
-	@docker run -v /var/run/docker.sock:/var/run/docker.sock \
+	@docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 		-v $${HOME}/Library/Caches:/root/.cache/ \
-		aquasec/trivy:$(TRIVY_LATEST) image --ignore-unfixed $(DOCKER_IMAGE):$(VERSION)
+		aquasec/trivy:$(TRIVY_LATEST) image --ignore-unfixed \
+		--severity HIGH,CRITICAL --exit-code 1 $(DOCKER_IMAGE):$(VERSION)
 
 .PHONY: docker-check
 docker-check: docker-lint docker-build docker-scan
