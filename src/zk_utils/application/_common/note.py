@@ -1,9 +1,15 @@
 from pathlib import Path
+from typing import Annotated
+
+from pydantic import PlainSerializer
 
 from ..._base_models import BaseFrozenModel
 
 
 class Note(BaseFrozenModel):
     title: str
-    path: Path
+    path: Annotated[
+        Path,
+        PlainSerializer(str, return_type=str, when_used="json"),
+    ]
     tags: list[str]
